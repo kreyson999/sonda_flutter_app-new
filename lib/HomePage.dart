@@ -117,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                             color: const Color(0xffFFF5ED),
                             borderRadius: BorderRadius.circular(8)),
                         child: IconButton(
-                            onPressed: _sendData,
+                            onPressed: () => _sendData("up"),
                             icon: Icon(Ionicons.chevron_up,
                                 size: 32, color: const Color(0xffF27639))),
                       ),
@@ -130,7 +130,7 @@ class _HomePageState extends State<HomePage> {
                               color: const Color(0xffFFF5ED),
                               borderRadius: BorderRadius.circular(8)),
                           child: IconButton(
-                              onPressed: () => {},
+                              onPressed: () => _sendData("down"),
                               icon: Icon(
                                 Ionicons.chevron_down,
                                 size: 32,
@@ -148,6 +148,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(top: 20),
               child: ReadDataSection(
                 phValue: _phValue,
+                readSensorsData: () => _sendData("read"),
               ))
         ],
       ),
@@ -155,7 +156,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _onDataReceived(Uint8List data) {
-    print("Otrzymano dane");
+    print("Otrzymano dane z czujników");
     data.forEach((char) {
       if (char == 10) {
         if (_messageBuffer.startsWith("CPH ")) {
@@ -169,10 +170,10 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _sendData() async {
+  void _sendData(String action) async {
     try {
-      print("Wysłano dane");
-      connection!.output.add(Uint8List.fromList(utf8.encode("read" + "\n")));
+      print("Wysłano dane do arduino");
+      connection!.output.add(Uint8List.fromList(utf8.encode(action + "\n")));
       await connection!.output.allSent;
     } catch (e) {
       setState(() {});
